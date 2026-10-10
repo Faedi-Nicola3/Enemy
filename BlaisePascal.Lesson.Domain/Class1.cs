@@ -1,65 +1,96 @@
-﻿namespace BlaisePascal.Lesson.Domain
+﻿namespace Player.Domain
 {
     public class Enemy
     {
-        //attributo
-        private int _health;
-
-        //proprietà
-        public int Health
+        public string Name;
+        private int _level;
+        public int Level
         {
-            get
+            get { return _level; }
+
+            private set
             {
-                return _health;
-            }
-            set
-            {
-                if (value < 0) // caso di limite 1
+                if (value < 1)
                 {
-                    _health = 0;
+                    throw new ArgumentOutOfRangeException("Level must be greater than or equal to 1.");
                 }
-                else if (value > 100) // caso di limite 2
-                {
-                    _health = 100;
-                }
-                else //caso di normalità
-                {
-                    _health = value;
-                }
+                _level = value;
             }
         }
+        public int Experience { get; private set; }
+        public int Health { get; private set; }
+        public int MaxHealth { get; private set; }
+        public bool IsAlive { get; private set; }
+        public int Gold { get; private set; }
 
-        //costruttore
-        public Enemy()
+        public Enemy(string name, int level, int experience, int health, int maxHealth, bool isAlive, int gold)
         {
-
+            Name = name;
+            Level = level;
+            Experience = experience;
+            Health = health;
+            MaxHealth = maxHealth;
+            IsAlive = isAlive;
+            Gold = gold;
         }
 
-        public void setHealth(int newHealth)
+        public void Addexperience(int amount)
         {
-            if (newHealth < 0)
-                Health = newHealth;
-            else if (newHealth > 100)
-                Health = 100;
-            else
-                Health = newHealth;
+            while (amount > 100)
+            {
+                Level += 1;
+                amount -= 100;
+            }
+            Experience += amount;
         }
 
-
-        public bool isAlive()
+        public void ResetExperience()
         {
-            return Health > 0;
+            Experience = 0;
         }
 
         public void TakeDamage(int damage)
         {
+
             if (damage < 0)
-                damage = 0
-            setHealth(_health - damage);
+            {
+                throw new ArgumentOutOfRangeException("Damage must be greater than or equal to 0.");
+            }
+
+            Health -= damage;
+            if (Health <= 0)
+            {
+                Health = 0;
+                IsAlive = false;
+            }
+        }
+
+        public void Heal(int amount)
+        {
+            if (amount < 0)
+            {
+                throw new ArgumentOutOfRangeException("Heal amount must be greater than or equal to 0.");
+            }
+            Health += amount;
+            if (Health > MaxHealth)
+            {
+                Health = MaxHealth;
+            }
+        }
+
+        public void AddGold(int amount)
+        {
+            if (amount < 0)
+            {
+                throw new ArgumentOutOfRangeException("Gold amount must be greater than or equal to 0.");
+            }
+            Gold += amount;
+        }
+        public void resetHealth()
+        {
+            Health = MaxHealth;
+            IsAlive = true;
         }
 
     }
-
 }
-
-
